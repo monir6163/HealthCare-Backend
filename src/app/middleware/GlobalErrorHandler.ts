@@ -35,7 +35,7 @@ const globalErrorHandler = (
     success: false,
     message,
     ...(errors ? { errors } : {}),
-    ...(err?.stack ? { stack: err?.stack } : {}),
+    // ...(err?.stack ? { stack: err?.stack } : {}),
   });
 };
 

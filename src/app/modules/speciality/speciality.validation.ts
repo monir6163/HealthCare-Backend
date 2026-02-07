@@ -13,4 +13,10 @@ export const specialityValidation = {
       icon: z.string().optional(),
     }),
   }),
+
+  deleteSpecialitySchema: z.object({
+    params: z.object({
+      id: z.string().nonempty({ message: "ID is required" }),
+    }),
+  }),
 };
