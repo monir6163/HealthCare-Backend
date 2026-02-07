@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import ApiError from "../../errors/ApiError";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
-import { IRegisterPatient } from "./auth.interface";
+import { ILoginPatient, IRegisterPatient } from "./auth.interface";
 
 const registerPatient = async (payload: IRegisterPatient) => {
   const { name, email, password } = payload;
@@ -29,9 +29,26 @@ const registerPatient = async (payload: IRegisterPatient) => {
       "Failed to register patient",
     );
   }
+  // patient profile creation transaction pataient model
   return newUser;
+};
+
+const loginPatient = async (payload: ILoginPatient) => {
+  const { email, password } = payload;
+  const user = await auth.api.signInEmail({
+    body: {
+      email,
+      password,
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, "Invalid email or password");
+  }
+  return user;
 };
 
 export const AuthService = {
   registerPatient,
+  loginPatient,
 };
