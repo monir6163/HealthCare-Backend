@@ -2,10 +2,10 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
-import { specialityService } from "./speciality.service";
+import { SpecialityService } from "./speciality.service";
 
 const createSpeciality = catchAsync(async (req: Request, res: Response) => {
-  const result = await specialityService.createSpeciality(req.body);
+  const result = await SpecialityService.createSpeciality(req.body);
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,
@@ -15,7 +15,7 @@ const createSpeciality = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllSpecialities = catchAsync(async (req: Request, res: Response) => {
-  const result = await specialityService.getAllSpecialities();
+  const result = await SpecialityService.getAllSpecialities();
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -26,7 +26,7 @@ const getAllSpecialities = catchAsync(async (req: Request, res: Response) => {
 
 const updateSpeciality = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await specialityService.updateSpeciality(
+  const result = await SpecialityService.updateSpeciality(
     id as string,
     req.body,
   );
@@ -40,7 +40,7 @@ const updateSpeciality = catchAsync(async (req: Request, res: Response) => {
 
 const deleteSpeciality = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  await specialityService.deleteSpeciality(id as string);
+  await SpecialityService.deleteSpeciality(id as string);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -48,7 +48,7 @@ const deleteSpeciality = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const specialityController = {
+export const SpecialityController = {
   createSpeciality,
   getAllSpecialities,
   updateSpeciality,

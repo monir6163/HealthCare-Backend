@@ -1,6 +1,6 @@
 import { Router } from "express";
 import validateRequest from "../../middleware/ValidateRequest";
-import { specialityController } from "./speciality.controller";
+import { SpecialityController } from "./speciality.controller";
 import { specialityValidation } from "./speciality.validation";
 
 const router = Router();
@@ -8,21 +8,21 @@ const router = Router();
 router.post(
   "/",
   validateRequest(specialityValidation.createSpecialitySchema),
-  specialityController.createSpeciality,
+  SpecialityController.createSpeciality,
 );
 
-router.get("/", specialityController.getAllSpecialities);
+router.get("/", SpecialityController.getAllSpecialities);
 
 router.put(
   "/:id",
   validateRequest(specialityValidation.updateSpecialitySchema),
-  specialityController.updateSpeciality,
+  SpecialityController.updateSpeciality,
 );
 
 router.delete(
   "/:id",
   validateRequest(specialityValidation.deleteSpecialitySchema),
-  specialityController.deleteSpeciality,
+  SpecialityController.deleteSpeciality,
 );
 
 export const SpecialityRoutes = router;

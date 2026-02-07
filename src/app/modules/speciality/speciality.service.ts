@@ -1,3 +1,4 @@
+import { StatusCodes } from "http-status-codes";
 import ApiError from "../../errors/ApiError";
 import { prisma } from "../../lib/prisma";
 import { Speciality } from "./speciality.interface";
@@ -11,7 +12,7 @@ const createSpeciality = async (payload: Speciality) => {
 
   if (existingSpeciality) {
     throw new ApiError(
-      400,
+      StatusCodes.CONFLICT,
       `Speciality with title - "${payload.title}" already exists`,
     );
   }
@@ -30,7 +31,7 @@ const getAllSpecialities = async (): Promise<Speciality[]> => {
     },
   });
   if (!specialities.length) {
-    throw new ApiError(404, "No specialities found");
+    throw new ApiError(StatusCodes.NOT_FOUND, "No specialities found");
   }
   return specialities as Speciality[];
 };
@@ -43,7 +44,10 @@ const updateSpeciality = async (id: string, payload: Speciality) => {
   });
 
   if (!existingSpeciality) {
-    throw new ApiError(404, `Speciality with ID - ${id} not found`);
+    throw new ApiError(
+      StatusCodes.NOT_FOUND,
+      `Speciality with ID - ${id} not found`,
+    );
   }
 
   const speciality = await prisma.specialty.update({
@@ -64,7 +68,10 @@ const deleteSpeciality = async (id: string) => {
   });
 
   if (!existingSpeciality) {
-    throw new ApiError(404, `Speciality with ID - ${id} not found`);
+    throw new ApiError(
+      StatusCodes.NOT_FOUND,
+      `Speciality with ID - ${id} not found`,
+    );
   }
 
   await prisma.specialty.delete({
@@ -74,7 +81,7 @@ const deleteSpeciality = async (id: string) => {
   });
 };
 
-export const specialityService = {
+export const SpecialityService = {
   createSpeciality,
   getAllSpecialities,
   updateSpeciality,
