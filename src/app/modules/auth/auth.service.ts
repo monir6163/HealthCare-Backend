@@ -30,7 +30,20 @@ const registerPatient = async (payload: IRegisterPatient) => {
     );
   }
   // patient profile creation transaction pataient model
-  return newUser;
+  const createdPatient = await prisma.$transaction(async (tx) => {
+    const patientTx = await tx.patient.create({
+      data: {
+        userId: newUser?.user?.id,
+        name: newUser?.user?.name || name,
+        email: newUser?.user?.email || email,
+      },
+    });
+    return patientTx;
+  });
+  return {
+    ...newUser,
+    patient: createdPatient,
+  };
 };
 
 const loginPatient = async (payload: ILoginPatient) => {

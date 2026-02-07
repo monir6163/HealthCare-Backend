@@ -17,6 +17,27 @@ interface EnvConfig {
 }
 
 const loadEnv = (): EnvConfig => {
+  const requiredEnvVars = [
+    "NODE_ENV",
+    "PORT",
+    "DATABASE_URL",
+    "BETTER_AUTH_SECRET",
+    "BETTER_AUTH_URL",
+    "FRONTEND_URL",
+    "EMAIL_HOST",
+    "EMAIL_PORT",
+    "EMAIL_USER",
+    "EMAIL_PASS",
+  ];
+
+  for (const varName of requiredEnvVars) {
+    if (!process.env[varName]) {
+      throw new Error(
+        `Environment variable ${varName} is required but not defined.`,
+      );
+    }
+  }
+
   return {
     NODE_ENV: process.env.NODE_ENV as "development" | "production",
     PORT: process.env.PORT as string,
