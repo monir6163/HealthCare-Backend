@@ -1,18 +1,15 @@
-import dotenv from "dotenv";
 import nodemailer from "nodemailer";
-import path from "path";
-
-dotenv.config({ path: path.join(process.cwd(), ".env") });
+import { envConfig } from "../../config/env";
 
 export const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: Number(process.env.EMAIL_PORT),
+  host: envConfig.EMAIL_HOST,
+  port: Number(envConfig.EMAIL_PORT),
   secure: false,
   tls: {
     rejectUnauthorized: false,
   },
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: envConfig.EMAIL_USER,
+    pass: envConfig.EMAIL_PASS,
   },
 });
