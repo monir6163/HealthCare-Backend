@@ -13,6 +13,12 @@ router.post(
 
 router.get("/", specialityController.getAllSpecialities);
 
+router.put(
+  "/:id",
+  validateRequest(specialityValidation.updateSpecialitySchema),
+  specialityController.updateSpeciality,
+);
+
 router.delete(
   "/:id",
   validateRequest(specialityValidation.deleteSpecialitySchema),

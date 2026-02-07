@@ -1,41 +1,15 @@
 import { Response } from "express";
+interface IResPonseData<T> {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data?: T;
+}
 
-const sendResponse = <T>(
-  res: Response,
-  jsonData: {
-    statusCode: number;
-    success: boolean;
-    message?: string;
-    token?: string;
-    meta?: {
-      page: number;
-      limit: number;
-      total: number;
-    };
-    data?: T | null | undefined;
-  },
-) => {
-  const response: {
-    success: boolean;
-    message?: string;
-    token?: string;
-    meta?: {
-      page: number;
-      limit: number;
-      total: number;
-    };
-    data?: T;
-  } = {
-    success: jsonData.success,
-  };
+const sendResponse = <T>(res: Response, jsonData: IResPonseData<T>) => {
+  const { statusCode, success, message, data } = jsonData;
 
-  if (jsonData.message) response.message = jsonData.message;
-  if (jsonData.token) response.token = jsonData.token;
-  if (jsonData.meta) response.meta = jsonData.meta;
-  if (jsonData.data !== undefined && jsonData.data !== null)
-    response.data = jsonData.data;
-
-  res.status(jsonData.statusCode).json(response);
+  res.status(statusCode).json({ success, message, data });
 };
 
 export default sendResponse;
