@@ -29,21 +29,33 @@ const registerPatient = async (payload: IRegisterPatient) => {
       "Failed to register patient",
     );
   }
-  // patient profile creation transaction pataient model
-  const createdPatient = await prisma.$transaction(async (tx) => {
-    const patientTx = await tx.patient.create({
-      data: {
-        userId: newUser?.user?.id,
-        name: newUser?.user?.name || name,
-        email: newUser?.user?.email || email,
-      },
+  try {
+    // patient profile creation transaction pataient model
+    const createdPatient = await prisma.$transaction(async (tx) => {
+      const patientTx = await tx.patient.create({
+        data: {
+          userId: newUser?.user?.id,
+          name: newUser?.user?.name || name,
+          email: newUser?.user?.email || email,
+        },
+      });
+      return patientTx;
     });
-    return patientTx;
-  });
-  return {
-    ...newUser,
-    patient: createdPatient,
-  };
+    return {
+      ...newUser,
+      patient: createdPatient,
+    };
+  } catch (error) {
+    console.log("err", error);
+    // Rollback user creation if patient profile creation fails
+    await prisma.user.delete({
+      where: { id: newUser.user?.id },
+    });
+    throw new ApiError(
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      "Failed to create patient profile",
+    );
+  }
 };
 
 const loginPatient = async (payload: ILoginPatient) => {
