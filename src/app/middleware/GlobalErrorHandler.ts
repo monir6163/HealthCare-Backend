@@ -1,42 +1,64 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { ZodError } from "zod";
+import z from "zod";
+import { envConfig } from "../../config/env";
+import ApiError from "../errors/ApiError";
+import { TErrorResponse, TErrorSources } from "../errors/ErrorInterface";
 import { handleZodError } from "./handleZodError";
 
-interface ErrorWithDetails extends Error {
-  statusCode?: number;
-  errors?: unknown;
-}
-
 const globalErrorHandler = (
-  err: ErrorWithDetails,
+  err: any,
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction,
 ) => {
-  let statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
-  let message = "Something went wrong!";
-  let errors: unknown;
-
-  /* -------------------- ZOD VALIDATION ERROR -------------------- */
-  if (err instanceof ZodError) {
-    statusCode = StatusCodes.BAD_REQUEST;
-    message = "Validation failed";
-    errors = handleZodError(err);
-  } else {
-    /* -------------------- CUSTOM / GENERIC ERROR -------------------- */
-    statusCode = err.statusCode || statusCode;
-    message = err.message || message;
-    errors = err.errors || null;
+  if (envConfig.NODE_ENV === "development") {
+    console.log("Error from Global Error Handler", err);
   }
 
-  res.status(statusCode).json({
-    success: false,
-    message,
-    ...(errors ? { errors } : {}),
-    // ...(err?.stack ? { stack: err?.stack } : {}),
-  });
-};
+  let errorSources: TErrorSources[] = [];
+  let statusCode: number = StatusCodes.INTERNAL_SERVER_ERROR;
+  let message: string = "Internal Server Error";
+  let stack: string | undefined = undefined;
 
+  if (err instanceof z.ZodError) {
+    const simplifiedError = handleZodError(err);
+    statusCode = simplifiedError.statusCode as number;
+    message = simplifiedError.message;
+    errorSources = [...simplifiedError.errors];
+    stack = err.stack;
+  } else if (err instanceof ApiError) {
+    statusCode = err.statusCode;
+    message = err.message;
+    stack = err.stack;
+    errorSources = [
+      {
+        path: "",
+        message: err.message,
+      },
+    ];
+  } else if (err instanceof Error) {
+    statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    message = err.message;
+    stack = err.stack;
+    errorSources = [
+      {
+        path: "",
+        message: err.message,
+      },
+    ];
+  }
+
+  const errorResponse: TErrorResponse = {
+    success: false,
+    message: message,
+    errors: errorSources,
+    error: envConfig.NODE_ENV === "development" ? err : undefined,
+    stack: envConfig.NODE_ENV === "development" ? stack : undefined,
+  };
+
+  res.status(statusCode).json(errorResponse);
+};
 export default globalErrorHandler;
