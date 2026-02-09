@@ -6,7 +6,7 @@ import z from "zod";
 import { envConfig } from "../../config/env";
 import ApiError from "../errors/ApiError";
 import { TErrorResponse, TErrorSources } from "../errors/ErrorInterface";
-import { handleZodError } from "./handleZodError";
+import { handleZodError } from "../errors/handleZodError";
 
 const globalErrorHandler = (
   err: any,
