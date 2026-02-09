@@ -1,7 +1,9 @@
 import { StatusCodes } from "http-status-codes";
+import { Role, UserStatus } from "../../../generated/prisma/enums";
 import ApiError from "../../errors/ApiError";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
+import { tokenUtils } from "../../utils/token";
 import { ILoginPatient, IRegisterPatient } from "./auth.interface";
 
 const registerPatient = async (payload: IRegisterPatient) => {
@@ -70,7 +72,31 @@ const loginPatient = async (payload: ILoginPatient) => {
   if (!user) {
     throw new ApiError(StatusCodes.UNAUTHORIZED, "Invalid email or password");
   }
-  return user;
+
+  const accessToken = tokenUtils.getAccessToken({
+    userId: user.user?.id,
+    role: user.user?.role as Role,
+    email: user.user?.email,
+    name: user.user?.name,
+    status: user.user?.status as UserStatus,
+    isDeleted: user.user?.isDeleted,
+    emailVerified: user.user?.emailVerified,
+  });
+  const refreshToken = tokenUtils.getRefreshToken({
+    userId: user.user?.id,
+    role: user.user?.role as Role,
+    email: user.user?.email,
+    name: user.user?.name,
+    status: user.user?.status as UserStatus,
+    isDeleted: user.user?.isDeleted,
+    emailVerified: user.user?.emailVerified,
+  });
+
+  return {
+    ...user,
+    accessToken,
+    refreshToken,
+  };
 };
 
 export const AuthService = {
