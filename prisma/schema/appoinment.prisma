@@ -13,4 +13,5 @@ model Appointment {
   shedule Shedule @relation(fields: [sheduleId], references: [id], onDelete: Cascade)
   prescription Prescription?
   review Review?
+  payment Payment?
 }
