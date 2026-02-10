@@ -6,4 +6,22 @@ model Shedule {
   endTime   DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  doctorShedules DoctorShedules[]
+
+  @@map("shedule")
+}
+
+model DoctorShedules {
+  doctorId String
+  sheduleId String
+  doctor   Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  shedule  Shedule  @relation(fields: [sheduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  isBooked Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([doctorId, sheduleId])
+  @@index([doctorId], name: "idx_doctor_shedule_doctor_id")
+  @@index([sheduleId], name: "idx_doctor_shedule_shedule_id")
+  @@map("doctor_shedule")
 }
