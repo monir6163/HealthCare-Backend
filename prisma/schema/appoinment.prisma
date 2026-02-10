@@ -12,4 +12,5 @@ model Appointment {
   sheduleId String
   shedule Shedule @relation(fields: [sheduleId], references: [id], onDelete: Cascade)
   prescription Prescription?
+  review Review?
 }

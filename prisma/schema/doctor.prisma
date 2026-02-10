@@ -23,6 +23,7 @@ model Doctor {
   doctorShedules     DoctorShedules[]
   appointments       Appointment[]
   prescriptions      Prescription[]
+  reviews            Review[]
 
   @@index([email], name: "idx_doctor_email")
   @@index([contactNumber], name: "idx_doctor_contact_number")
