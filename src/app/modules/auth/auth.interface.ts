@@ -10,3 +10,9 @@ export interface ILoginPatient {
   password: string;
   role?: Role;
 }
+
+export interface IChangePasswordPayload {
+  userId: string;
+  currentPassword: string;
+  newPassword: string;
+}

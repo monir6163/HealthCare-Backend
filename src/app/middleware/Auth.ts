@@ -9,6 +9,7 @@ const authMiddleware = (...roles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const headers = fromNodeHeaders(req.headers);
+
       const session = await auth.api.getSession({ headers });
       if (!session || !session.user) {
         throw new ApiError(

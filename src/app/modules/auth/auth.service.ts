@@ -1,8 +1,14 @@
+import { fromNodeHeaders } from "better-auth/node";
+import { Request } from "express";
 import { StatusCodes } from "http-status-codes";
 import ApiError from "../../errors/ApiError";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
-import { ILoginPatient, IRegisterPatient } from "./auth.interface";
+import {
+  IChangePasswordPayload,
+  ILoginPatient,
+  IRegisterPatient,
+} from "./auth.interface";
 
 const registerPatient = async (payload: IRegisterPatient) => {
   const { name, email, password } = payload;
@@ -74,7 +80,37 @@ const loginPatient = async (payload: ILoginPatient) => {
   return user;
 };
 
+const changePassword = async (
+  payload: IChangePasswordPayload,
+  req: Request,
+) => {
+  const { userId, currentPassword, newPassword } = payload;
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
+  }
+  const result = await auth.api.changePassword({
+    body: {
+      newPassword: newPassword,
+      currentPassword: currentPassword,
+      revokeOtherSessions: true,
+    },
+    headers: fromNodeHeaders(req.headers),
+  });
+  if (!result) {
+    throw new ApiError(
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      "Failed to change password",
+    );
+  }
+  return result;
+};
+
 export const AuthService = {
   registerPatient,
   loginPatient,
+  changePassword,
 };
