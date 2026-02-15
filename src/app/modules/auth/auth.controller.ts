@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import { betterAuthHeaderForward } from "../../helper/HeaderForawrd";
 import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 import { AuthService } from "./auth.service";
@@ -17,11 +18,8 @@ const registerPatient = catchAsync(async (req: Request, res: Response) => {
 
 const loginPatient = catchAsync(async (req: Request, res: Response) => {
   const response = await AuthService.loginPatient(req.body);
-  response.headers.forEach((value, key) => {
-    res.append(key, value);
-  });
+  betterAuthHeaderForward(response, res);
   const data = await response.json();
-
   sendResponse(res, {
     statusCode: response.status,
     success: true,
