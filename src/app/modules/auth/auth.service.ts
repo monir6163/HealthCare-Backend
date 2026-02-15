@@ -71,6 +71,7 @@ const loginPatient = async (payload: ILoginPatient) => {
       email,
       password,
     },
+    asResponse: true,
   });
 
   if (!user) {

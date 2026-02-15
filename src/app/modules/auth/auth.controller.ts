@@ -18,6 +18,10 @@ const registerPatient = catchAsync(async (req: Request, res: Response) => {
 const loginPatient = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
   const result = await AuthService.loginPatient(payload);
+  const setCookieHeaders = result.headers.get("set-cookie");
+  if (setCookieHeaders) {
+    res.setHeader("Set-Cookie", setCookieHeaders);
+  }
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
