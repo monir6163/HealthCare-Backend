@@ -66,19 +66,17 @@ const registerPatient = async (payload: IRegisterPatient) => {
 
 const loginPatient = async (payload: ILoginPatient) => {
   const { email, password } = payload;
-  const user = await auth.api.signInEmail({
-    body: {
-      email,
-      password,
-    },
+
+  const response = await auth.api.signInEmail({
+    body: { email, password },
     asResponse: true,
   });
 
-  if (!user) {
+  if (!response.ok) {
     throw new ApiError(StatusCodes.UNAUTHORIZED, "Invalid email or password");
   }
 
-  return user;
+  return response;
 };
 
 const changePassword = async (

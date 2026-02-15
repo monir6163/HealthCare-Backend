@@ -16,17 +16,17 @@ const registerPatient = catchAsync(async (req: Request, res: Response) => {
 });
 
 const loginPatient = catchAsync(async (req: Request, res: Response) => {
-  const payload = req.body;
-  const result = await AuthService.loginPatient(payload);
-  const setCookieHeaders = result.headers.get("set-cookie");
-  if (setCookieHeaders) {
-    res.setHeader("Set-Cookie", setCookieHeaders);
-  }
+  const response = await AuthService.loginPatient(req.body);
+  response.headers.forEach((value, key) => {
+    res.append(key, value);
+  });
+  const data = await response.json();
+
   sendResponse(res, {
-    statusCode: StatusCodes.OK,
+    statusCode: response.status,
     success: true,
     message: "Patient logged in successfully",
-    data: result,
+    data: data,
   });
 });
 
