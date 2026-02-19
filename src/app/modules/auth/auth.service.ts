@@ -105,7 +105,7 @@ const changePassword = async (
       "Failed to change password",
     );
   }
-  return result;
+  return null;
 };
 
 export const AuthService = {

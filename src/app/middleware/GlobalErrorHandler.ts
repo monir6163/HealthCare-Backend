@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { APIError } from "better-auth/api";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import z from "zod";
@@ -43,6 +44,16 @@ const globalErrorHandler = async (
     message = simplifiedError.message;
     errorSources = [...simplifiedError.errors];
     stack = err.stack;
+  } else if (err instanceof APIError) {
+    statusCode = err.statusCode;
+    message = err.message;
+    stack = err.stack;
+    errorSources = [
+      {
+        path: "", // better-auth errors
+        message: err.message,
+      },
+    ];
   } else if (err instanceof ApiError) {
     statusCode = err.statusCode;
     message = err.message;
