@@ -10,6 +10,13 @@ import {
   IRegisterPatient,
 } from "./auth.interface";
 
+const getMe = async (req: Request) => {
+  const session = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  });
+  return session?.user || null;
+};
+
 const registerPatient = async (payload: IRegisterPatient) => {
   const { name, email, password } = payload;
   const existingUser = await prisma.user.findUnique({
@@ -108,8 +115,18 @@ const changePassword = async (
   return null;
 };
 
+const logOut = async (req: Request) => {
+  const response = await auth.api.signOut({
+    headers: fromNodeHeaders(req.headers),
+    asResponse: true,
+  });
+  return response;
+};
+
 export const AuthService = {
   registerPatient,
   loginPatient,
   changePassword,
+  logOut,
+  getMe,
 };

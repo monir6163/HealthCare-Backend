@@ -6,7 +6,11 @@ import { AuthController } from "./auth.controller";
 import { AuthValidation } from "./auth.validation";
 
 const router = Router();
-
+router.get(
+  "/me",
+  authMiddleware(Role.PATIENT, Role.DOCTOR, Role.ADMIN, Role.SUPER_ADMIN),
+  AuthController.getMe,
+);
 router.post(
   "/register",
   validateRequest(AuthValidation.patientRegistrationSchema),
@@ -24,6 +28,12 @@ router.post(
   authMiddleware(Role.PATIENT, Role.DOCTOR, Role.ADMIN, Role.SUPER_ADMIN),
   validateRequest(AuthValidation.changePasswordSchema),
   AuthController.changePassword,
+);
+
+router.post(
+  "/logout",
+  authMiddleware(Role.PATIENT, Role.DOCTOR, Role.ADMIN, Role.SUPER_ADMIN),
+  AuthController.logOut,
 );
 
 export const AuthRoutes = router;

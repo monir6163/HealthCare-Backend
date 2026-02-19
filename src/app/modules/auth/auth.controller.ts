@@ -5,6 +5,17 @@ import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 import { AuthService } from "./auth.service";
 
+const getMe = catchAsync(async (req: Request, res: Response) => {
+  const response = await AuthService.getMe(req);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "User retrieved successfully",
+    data: response,
+  });
+});
+
 const registerPatient = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
   const result = await AuthService.registerPatient(payload);
@@ -41,8 +52,21 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const logOut = catchAsync(async (req: Request, res: Response) => {
+  const response = await AuthService.logOut(req);
+  betterAuthHeaderForward(response, res);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Logged out successfully",
+    data: null,
+  });
+});
+
 export const AuthController = {
   registerPatient,
   loginPatient,
   changePassword,
+  logOut,
+  getMe,
 };
