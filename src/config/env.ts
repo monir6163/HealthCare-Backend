@@ -14,6 +14,7 @@ interface EnvConfig {
   EMAIL_PORT: string | number;
   EMAIL_USER: string;
   EMAIL_PASS: string;
+  EMAIL_FROM: string;
   CLOUDINARY: {
     CLOUD_NAME: string;
     API_KEY: string;
@@ -33,6 +34,7 @@ const loadEnv = (): EnvConfig => {
     "EMAIL_PORT",
     "EMAIL_USER",
     "EMAIL_PASS",
+    "EMAIL_FROM",
     "CLOUDINARY_CLOUD_NAME",
     "CLOUDINARY_API_KEY",
     "CLOUDINARY_API_SECRET",
@@ -57,6 +59,7 @@ const loadEnv = (): EnvConfig => {
     EMAIL_PORT: process.env.EMAIL_PORT as string | number,
     EMAIL_USER: process.env.EMAIL_USER as string,
     EMAIL_PASS: process.env.EMAIL_PASS as string,
+    EMAIL_FROM: process.env.EMAIL_FROM as string,
     CLOUDINARY: {
       CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
       API_KEY: process.env.CLOUDINARY_API_KEY as string,
