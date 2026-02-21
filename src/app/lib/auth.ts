@@ -1,7 +1,9 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { emailOTP } from "better-auth/plugins";
 import { envConfig } from "../../config/env";
 import { Role, UserStatus } from "../../generated/prisma/enums";
+import { sendEmail } from "./mailService";
 import { prisma } from "./prisma";
 
 export const auth = betterAuth({
@@ -16,6 +18,39 @@ export const auth = betterAuth({
     autoSignIn: false,
     requireEmailVerification: false,
   },
+
+  // email verification can be enabled like this
+  emailVerification: {
+    sendOnSignIn: true,
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+  },
+
+  plugins: [
+    emailOTP({
+      overrideDefaultEmailVerification: true,
+      async sendVerificationOTP({ email, otp, type }) {
+        if (type === "email-verification") {
+          const user = await prisma.user.findUnique({
+            where: { email },
+          });
+          if (user) {
+            await sendEmail(
+              email,
+              "Verify your email",
+              "otp",
+              {
+                name: user.name,
+                otp,
+              },
+              [],
+            );
+          }
+        }
+      },
+      expiresIn: 2 * 60, // 2 minutes
+    }),
+  ],
 
   // additional fields can be added to the user model like this
   user: {
