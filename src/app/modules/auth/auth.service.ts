@@ -123,10 +123,27 @@ const logOut = async (req: Request) => {
   return response;
 };
 
+const forgotPassword = async (email: string) => {
+  const isUser = await prisma.user.findUnique({
+    where: { email },
+  });
+  if (!isUser) {
+    throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
+  }
+  await auth.api.requestPasswordResetEmailOTP({
+    body: {
+      email,
+    },
+  });
+
+  return null;
+};
+
 export const AuthService = {
   registerPatient,
   loginPatient,
   changePassword,
   logOut,
   getMe,
+  forgotPassword,
 };
