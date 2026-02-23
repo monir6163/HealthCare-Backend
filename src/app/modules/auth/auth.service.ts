@@ -139,6 +139,34 @@ const forgotPassword = async (email: string) => {
   return null;
 };
 
+const resetPassword = async (
+  email: string,
+  otp: string,
+  newPassword: string,
+) => {
+  const isUser = await prisma.user.findUnique({
+    where: { email },
+  });
+  if (!isUser) {
+    throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
+  }
+  await auth.api.resetPasswordEmailOTP({
+    body: {
+      email,
+      otp,
+      password: newPassword,
+    },
+  });
+
+  await prisma.session.deleteMany({
+    where: {
+      userId: isUser.id,
+    },
+  });
+
+  return null;
+};
+
 export const AuthService = {
   registerPatient,
   loginPatient,
@@ -146,4 +174,5 @@ export const AuthService = {
   logOut,
   getMe,
   forgotPassword,
+  resetPassword,
 };
