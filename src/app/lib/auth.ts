@@ -20,7 +20,21 @@ export const auth = betterAuth({
   },
 
   // social providers can be enabled like this
-
+  socialProviders: {
+    google: {
+      clientId: envConfig.GOOGLE_CLIENT_ID,
+      clientSecret: envConfig.GOOGLE_CLIENT_SECRET,
+      mapProfileToUser: () => {
+        return {
+          role: Role.PATIENT,
+          status: UserStatus.ACTIVE,
+          needPasswordChange: false,
+          isDeleted: false,
+          deletedAt: null,
+        };
+      },
+    },
+  },
   // email verification can be enabled like this
   emailVerification: {
     sendOnSignIn: true,

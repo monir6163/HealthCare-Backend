@@ -28,4 +28,20 @@ export const AuthValidation = {
         .min(8, "New password must be at least 8 characters long"),
     }),
   }),
+
+  forgotPasswordSchema: z.object({
+    body: z.object({
+      email: z.string().email("Invalid email address"),
+    }),
+  }),
+
+  resetPasswordSchema: z.object({
+    body: z.object({
+      email: z.string().email("Invalid email address"),
+      otp: z.string().length(6, "OTP must be 6 characters long"),
+      newPassword: z
+        .string()
+        .min(8, "New password must be at least 8 characters long"),
+    }),
+  }),
 };
