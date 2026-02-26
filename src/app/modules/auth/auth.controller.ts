@@ -84,6 +84,21 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const googleLogin = catchAsync(async (req: Request, res: Response) => {});
+
+const googleLoginSuccess = catchAsync(
+  async (req: Request, res: Response) => {},
+);
+
+const googleLoginFailure = catchAsync(async (req: Request, res: Response) => {
+  sendResponse(res, {
+    statusCode: StatusCodes.UNAUTHORIZED,
+    success: false,
+    message: "Google login failed",
+    data: null,
+  });
+});
+
 export const AuthController = {
   registerPatient,
   loginPatient,
@@ -92,4 +107,7 @@ export const AuthController = {
   getMe,
   forgotPassword,
   resetPassword,
+  googleLogin,
+  googleLoginSuccess,
+  googleLoginFailure,
 };
