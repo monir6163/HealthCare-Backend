@@ -2,6 +2,7 @@ import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
 import express, { Application } from "express";
 import { StatusCodes } from "http-status-codes";
+import path from "node:path";
 import { auth } from "./app/lib/auth";
 import globalErrorHandler from "./app/middleware/GlobalErrorHandler";
 import notFound from "./app/middleware/NotFound";
@@ -10,6 +11,9 @@ import sendResponse from "./app/shared/sendResponse";
 import { envConfig } from "./config/env";
 
 const app: Application = express();
+app.set("view engine", "ejs");
+app.set("views", path.resolve(process.cwd(), "src/app/templates"));
+app.set("trust proxy", true);
 app.use("/api/auth", toNodeHandler(auth));
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
