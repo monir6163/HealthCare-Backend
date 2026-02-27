@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import { envConfig } from "../../../config/env";
 import { betterAuthHeaderForward } from "../../helper/HeaderForawrd";
 import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
@@ -84,7 +85,15 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const googleLogin = catchAsync(async (req: Request, res: Response) => {});
+const googleLogin = catchAsync(async (req: Request, res: Response) => {
+  const redirectUrl = (req.query.redirectUrl as string) || "/dashboard";
+  const encodedRedirectUrl = encodeURIComponent(redirectUrl as string);
+  const callbackUrl = `${envConfig.BETTER_AUTH_URL}/api/v1/auth/google/success?redirect=${encodedRedirectUrl}`;
+  res.render("googleRedirect", {
+    callbackUrl,
+    betterAuthUrl: envConfig.BETTER_AUTH_URL,
+  });
+});
 
 const googleLoginSuccess = catchAsync(
   async (req: Request, res: Response) => {},
