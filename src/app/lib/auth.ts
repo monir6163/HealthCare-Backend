@@ -22,6 +22,9 @@ export const auth = betterAuth({
   // social providers can be enabled like this
   socialProviders: {
     google: {
+      prompt: "select_account consent",
+      accessType: "offline",
+      lastUsed: true,
       clientId: envConfig.GOOGLE_CLIENT_ID,
       clientSecret: envConfig.GOOGLE_CLIENT_SECRET,
     },
