@@ -63,6 +63,17 @@ const logOut = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const verifyEmail = catchAsync(async (req: Request, res: Response) => {
+  const { email, otp } = req.body;
+  const response = await AuthService.verifyEmail(email, otp);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Email verified successfully",
+    data: response,
+  });
+});
+
 const forgotPassword = catchAsync(async (req: Request, res: Response) => {
   const response = await AuthService.forgotPassword(req.body);
   sendResponse(res, {
@@ -89,6 +100,7 @@ export const AuthController = {
   loginPatient,
   changePassword,
   logOut,
+  verifyEmail,
   getMe,
   forgotPassword,
   resetPassword,

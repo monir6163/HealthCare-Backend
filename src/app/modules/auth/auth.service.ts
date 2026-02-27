@@ -123,6 +123,22 @@ const logOut = async (req: Request) => {
   return response;
 };
 
+const verifyEmail = async (email: string, otp: string) => {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+  if (!user) {
+    throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
+  }
+  await auth.api.verifyEmailOTP({
+    body: {
+      email,
+      otp,
+    },
+  });
+  return null;
+};
+
 const forgotPassword = async (email: string) => {
   const isUser = await prisma.user.findUnique({
     where: { email },
@@ -179,6 +195,7 @@ export const AuthService = {
   loginPatient,
   changePassword,
   logOut,
+  verifyEmail,
   getMe,
   forgotPassword,
   resetPassword,
