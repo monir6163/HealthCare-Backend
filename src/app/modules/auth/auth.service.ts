@@ -174,8 +174,6 @@ const resetPassword = async (
   return null;
 };
 
-const googleLoginSuccess = async () => {};
-
 export const AuthService = {
   registerPatient,
   loginPatient,
@@ -184,5 +182,4 @@ export const AuthService = {
   getMe,
   forgotPassword,
   resetPassword,
-  googleLoginSuccess,
 };
