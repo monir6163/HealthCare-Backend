@@ -79,6 +79,8 @@ export const auth = betterAuth({
     }),
   ],
 
+  hooks: {},
+
   // additional fields can be added to the user model like this
   user: {
     additionalFields: {
