@@ -36,4 +36,40 @@ export class QueryBuilder<
       where: {},
     };
   }
+  search(): this {
+    const { searchTerm } = this.queryParams;
+    const { searchableFields } = this.config;
+
+    if (searchTerm && searchableFields && searchableFields.length > 0) {
+      const searchConditions: Record<string, unknown>[] = searchableFields.map(
+        (field) => {
+          if (field.includes(".")) {
+            const parts = field.split(".");
+            const obj: Record<string, unknown> = {};
+            let current = obj;
+            for (let i = 0; i < parts.length - 1; i++) {
+              current[parts[i]] = {};
+              current = current[parts[i]] as Record<string, unknown>;
+            }
+            current[parts[parts.length - 1]] = {
+              contains: searchTerm,
+              mode: "insensitive",
+            };
+            return obj;
+          } else {
+            return { [field]: { contains: searchTerm, mode: "insensitive" } };
+          }
+        },
+      );
+      const whereCondition = this.query.where as Record<string, unknown>;
+      whereCondition.OR = searchConditions;
+
+      const countWhereCondition = this.countQuery.where as Record<
+        string,
+        unknown
+      >;
+      countWhereCondition.OR = searchConditions;
+    }
+    return this;
+  }
 }
