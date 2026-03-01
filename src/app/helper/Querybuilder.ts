@@ -1,4 +1,10 @@
-import { PrismaCountArgs, PrismaFindManyArgs } from "./query.interface";
+import {
+  IQueryBuilderConfig,
+  IQueryParams,
+  PrismaCountArgs,
+  PrismaFindManyArgs,
+  PrismaModelDelgate,
+} from "./query.interface";
 
 export class QueryBuilder<
   T,
@@ -13,4 +19,21 @@ export class QueryBuilder<
   private sortBy: string = "createdAt";
   private sortOrder: "asc" | "desc" = "desc";
   private selectFields: Record<string, boolean | undefined>;
+
+  constructor(
+    private model: PrismaModelDelgate,
+    private queryParams: IQueryParams,
+    private config: IQueryBuilderConfig,
+  ) {
+    this.query = {
+      where: {},
+      include: {},
+      orderBy: {},
+      skip: 0,
+      take: 10,
+    };
+    this.countQuery = {
+      where: {},
+    };
+  }
 }
