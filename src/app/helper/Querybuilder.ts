@@ -12,7 +12,7 @@ import {
 export class QueryBuilder<
   T,
   TWhereInput = Record<string, unknown>,
-  TIncluder = Record<string, unknown>,
+  TInclude = Record<string, unknown>,
 > {
   private query: PrismaFindManyArgs;
   private countQuery: PrismaCountArgs;
@@ -318,6 +318,19 @@ export class QueryBuilder<
 
       delete this.query.include;
     }
+    return this;
+  }
+
+  include(relation: TInclude): this {
+    if (this.selectFields) {
+      return this;
+    }
+
+    this.query.include = {
+      ...(this.query.include as Record<string, unknown>),
+      ...(relation as Record<string, unknown>),
+    };
+
     return this;
   }
 
