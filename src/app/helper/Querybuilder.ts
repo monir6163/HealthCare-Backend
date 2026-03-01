@@ -334,6 +334,44 @@ export class QueryBuilder<
     return this;
   }
 
+  dynamicInclude(
+    includeConfig: Record<string, unknown>,
+    defaultInclude?: string[],
+  ): this {
+    if (this.selectFields) {
+      return this;
+    }
+
+    const result: Record<string, unknown> = {};
+
+    defaultInclude?.forEach((field) => {
+      if (includeConfig[field]) {
+        result[field] = includeConfig[field];
+      }
+    });
+
+    const includeParam = this.queryParams.include as string | undefined;
+
+    if (includeParam && typeof includeParam === "string") {
+      const requestedRelations = includeParam
+        .split(",")
+        .map((relation) => relation.trim());
+
+      requestedRelations.forEach((relation) => {
+        if (includeConfig[relation]) {
+          result[relation] = includeConfig[relation];
+        }
+      });
+    }
+
+    this.query.include = {
+      ...(this.query.include as Record<string, unknown>),
+      ...result,
+    };
+
+    return this;
+  }
+
   private deepMerge(
     target: Record<string, unknown>,
     source: Record<string, unknown>,
