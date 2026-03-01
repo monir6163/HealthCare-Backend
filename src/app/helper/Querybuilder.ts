@@ -416,6 +416,10 @@ export class QueryBuilder<
     );
   }
 
+  getQuery(): PrismaFindManyArgs {
+    return this.query;
+  }
+
   private deepMerge(
     target: Record<string, unknown>,
     source: Record<string, unknown>,
