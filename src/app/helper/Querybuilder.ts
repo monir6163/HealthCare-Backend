@@ -22,7 +22,7 @@ export class QueryBuilder<
   private skip: number = 0;
   private sortBy: string = "createdAt";
   private sortOrder: "asc" | "desc" = "desc";
-  private selectFields: Record<string, boolean | undefined>;
+  private selectFields: Record<string, boolean> | undefined;
 
   constructor(
     private model: PrismaModelDelgate,
