@@ -1,6 +1,8 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { emailOTP } from "better-auth/plugins";
+import { StatusCodes } from "http-status-codes";
 import { envConfig } from "../../config/env";
 import { Role, UserStatus } from "../../generated/prisma/enums";
 import { sendEmail } from "./mailService";
@@ -24,7 +26,6 @@ export const auth = betterAuth({
     google: {
       prompt: "select_account consent",
       accessType: "offline",
-      lastUsed: true,
       clientId: envConfig.GOOGLE_CLIENT_ID,
       clientSecret: envConfig.GOOGLE_CLIENT_SECRET,
     },
@@ -79,7 +80,27 @@ export const auth = betterAuth({
     }),
   ],
 
-  hooks: {},
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path === "/sign-in/email") {
+        const { email } = ctx.body;
+        const user = await prisma.user.findUnique({
+          where: { email },
+        });
+        if (user && user.status === UserStatus.BLOCKED) {
+          throw new APIError("BAD_REQUEST", {
+            message: "Your account is Blocked. Please contact support.",
+            statusCode: StatusCodes.BAD_REQUEST,
+          });
+        } else if (user && user.emailVerified === false) {
+          throw new APIError("BAD_REQUEST", {
+            message: "Please verify your email before signing in.",
+            statusCode: StatusCodes.BAD_REQUEST,
+          });
+        }
+      }
+    }),
+  },
 
   // additional fields can be added to the user model like this
   user: {
