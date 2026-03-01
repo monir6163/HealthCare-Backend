@@ -410,6 +410,12 @@ export class QueryBuilder<
     };
   }
 
+  async count(): Promise<number> {
+    return await this.model.count(
+      this.countQuery as Parameters<typeof this.model.count>[0],
+    );
+  }
+
   private deepMerge(
     target: Record<string, unknown>,
     source: Record<string, unknown>,
