@@ -15,6 +15,57 @@ const createSchedule = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAllSchedules = catchAsync(async (req: Request, res: Response) => {
+  const result = await ScheduleService.getAllSchedules();
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Schedules retrieved successfully",
+    data: result,
+  });
+});
+
+const getScheduleById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await ScheduleService.getScheduleById(id as string);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Schedule retrieved successfully",
+    data: result,
+  });
+});
+
+const updateSchedule = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const scheduleData = req.body;
+  const result = await ScheduleService.updateSchedule(
+    id as string,
+    scheduleData,
+  );
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Schedule updated successfully",
+    data: result,
+  });
+});
+
+const deleteSchedule = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await ScheduleService.deleteSchedule(id as string);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Schedule deleted successfully",
+    data: result,
+  });
+});
+
 export const ScheduleController = {
   createSchedule,
+  getAllSchedules,
+  getScheduleById,
+  updateSchedule,
+  deleteSchedule,
 };
