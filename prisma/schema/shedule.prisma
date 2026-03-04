@@ -1,23 +1,21 @@
 model Shedule {
-  id        String   @id @default(uuid(7))
-  startDate DateTime
-  endDate   DateTime
-  startTime DateTime
-  endTime   DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String           @id @default(uuid(7))
+  startDateTime  DateTime
+  endDateTime    DateTime
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
   doctorShedules DoctorShedules[]
-  appointments Appointment[]
+  appointments   Appointment[]
 
   @@map("shedule")
 }
 
 model DoctorShedules {
-  doctorId String
+  doctorId  String
   sheduleId String
-  doctor   Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  shedule  Shedule  @relation(fields: [sheduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  isBooked Boolean  @default(false)
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  shedule   Shedule  @relation(fields: [sheduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  isBooked  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
