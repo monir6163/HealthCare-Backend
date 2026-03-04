@@ -12,10 +12,30 @@ const getAllDoctors = catchAsync(async (req: Request, res: Response) => {
     statusCode: StatusCodes.OK,
     success: true,
     message: "Doctors retrieved successfully",
-    data: result,
+    data: result.data,
+    meta: result.meta,
+  });
+});
+
+const getDoctorById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const doctor = await doctorService.getDoctorById(id as string);
+  if (!doctor) {
+    return sendResponse(res, {
+      statusCode: StatusCodes.NOT_FOUND,
+      success: false,
+      message: "Doctor not found",
+    });
+  }
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Doctor retrieved successfully",
+    data: doctor,
   });
 });
 
 export const doctorController = {
   getAllDoctors,
+  getDoctorById,
 };

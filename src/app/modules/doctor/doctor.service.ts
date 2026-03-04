@@ -40,6 +40,35 @@ const getAllDoctors = async (query: IQueryParams) => {
   return result;
 };
 
+const getDoctorById = async (id: string) => {
+  const doctor = await prisma.doctor.findUnique({
+    where: { id },
+    include: {
+      user: true,
+      specialties: {
+        include: {
+          specialty: true,
+        },
+      },
+      appointments: {
+        include: {
+          patient: true,
+          shedule: true,
+          prescription: true,
+        },
+      },
+      doctorShedules: {
+        include: {
+          shedule: true,
+        },
+      },
+      reviews: true,
+    },
+  });
+  return doctor;
+};
+
 export const doctorService = {
   getAllDoctors,
+  getDoctorById,
 };
