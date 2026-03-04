@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { Doctor, Prisma } from "../../../generated/prisma/client";
+import { Doctor, Prisma, UserStatus } from "../../../generated/prisma/client";
 import ApiError from "../../errors/ApiError";
 import { IQueryParams } from "../../helper/query.interface";
 import { QueryBuilder } from "../../helper/Querybuilder";
@@ -127,8 +127,50 @@ const updateDoctor = async (id: string, payload: IUpdateDoctorPayload) => {
   return doctor;
 };
 
+//soft delete
+const deleteDoctor = async (id: string) => {
+  const isDoctorExist = await prisma.doctor.findUnique({
+    where: { id },
+    include: { user: true },
+  });
+
+  if (!isDoctorExist) {
+    throw new ApiError(StatusCodes.NOT_FOUND, "Doctor not found");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.doctor.update({
+      where: { id },
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
+      },
+    });
+
+    await tx.user.update({
+      where: { id: isDoctorExist.userId },
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
+        status: UserStatus.DELETED,
+      },
+    });
+
+    await tx.session.deleteMany({
+      where: { userId: isDoctorExist.userId },
+    });
+
+    await tx.doctorSpecialty.deleteMany({
+      where: { doctorId: id },
+    });
+  });
+
+  return null;
+};
+
 export const doctorService = {
   getAllDoctors,
   getDoctorById,
   updateDoctor,
+  deleteDoctor,
 };

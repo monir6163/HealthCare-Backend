@@ -21,4 +21,10 @@ router.patch(
   doctorController.updateDoctor,
 );
 
+router.delete(
+  "/:id",
+  authMiddleware(Role.SUPER_ADMIN, Role.ADMIN),
+  doctorController.deleteDoctor,
+);
+
 export const DoctorRoutes = router;
