@@ -1,8 +1,10 @@
 import { addHours, addMinutes, format } from "date-fns";
+import { prisma } from "../../lib/prisma";
 import {
   ICreateSchedulePayload,
   IUpdateSchedulePayload,
 } from "./schedule.interface";
+import { convertDateFormat } from "./schedule.utlis";
 
 const createSchedule = async (payload: ICreateSchedulePayload) => {
   const { startDate, endDate, startTime, endTime } = payload;
@@ -29,9 +31,35 @@ const createSchedule = async (payload: ICreateSchedulePayload) => {
         Number(endTime.split(":")[1]),
       ),
     );
-    while (startDateTime < endDateTime) {}
+    while (startDateTime < endDateTime) {
+      const s = await convertDateFormat(startDateTime);
+      const e = await convertDateFormat(addMinutes(startDateTime, interval));
+
+      const scheduleData = {
+        startDate: s,
+        endDate: e,
+      };
+      const existingSchedule = await prisma.shedule.findFirst({
+        where: {
+          startDateTime: scheduleData.startDate,
+          endDateTime: scheduleData.endDate,
+        },
+      });
+      if (!existingSchedule) {
+        const schedule = await prisma.shedule.create({
+          data: {
+            startDateTime: scheduleData.startDate,
+            endDateTime: scheduleData.endDate,
+          },
+        });
+        schedules.push(schedule);
+      }
+      startDateTime.setMinutes(startDateTime.getMinutes() + interval);
+    }
+    currentDate.setDate(currentDate.getDate() + 1);
   }
-  return { startDate, endDate, startTime, endTime };
+
+  return schedules;
 };
 
 const getAllSchedules = async () => {
