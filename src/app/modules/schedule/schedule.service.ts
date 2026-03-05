@@ -1,3 +1,4 @@
+import { addHours, addMinutes, format } from "date-fns";
 import {
   ICreateSchedulePayload,
   IUpdateSchedulePayload,
@@ -10,17 +11,25 @@ const createSchedule = async (payload: ICreateSchedulePayload) => {
   const lastDate = new Date(endDate);
   const schedules = [];
   while (currentDate <= lastDate) {
-    const startTimeParts = startTime.split(":");
-    const endTimeParts = endTime.split(":");
-    const startDateTime = new Date(currentDate);
-    startDateTime.setHours(
-      parseInt(startTimeParts[0]),
-      parseInt(startTimeParts[1]),
+    const startDateTime = new Date(
+      addMinutes(
+        addHours(
+          `${format(currentDate, "yyyy-MM-dd")}`,
+          Number(startTime.split(":")[0]),
+        ),
+        Number(startTime.split(":")[1]),
+      ),
     );
-    const endDateTime = new Date(currentDate);
-    endDateTime.setHours(parseInt(endTimeParts[0]), parseInt(endTimeParts[1]));
-    schedules.push({ start: startDateTime, end: endDateTime });
-    currentDate.setMinutes(currentDate.getMinutes() + interval);
+    const endDateTime = new Date(
+      addMinutes(
+        addHours(
+          `${format(currentDate, "yyyy-MM-dd")}`,
+          Number(endTime.split(":")[0]),
+        ),
+        Number(endTime.split(":")[1]),
+      ),
+    );
+    while (startDateTime < endDateTime) {}
   }
   return { startDate, endDate, startTime, endTime };
 };
