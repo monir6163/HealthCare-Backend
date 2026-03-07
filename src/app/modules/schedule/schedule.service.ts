@@ -79,15 +79,25 @@ const getAllSchedules = async (query: IQueryParams) => {
 };
 
 const getScheduleById = async (id: string) => {
-  return { id };
+  const schedule = await prisma.shedule.findUnique({
+    where: { id },
+  });
+  return schedule;
 };
 
 const updateSchedule = async (id: string, payload: IUpdateSchedulePayload) => {
-  return { id, ...payload };
+  const schedule = await prisma.shedule.update({
+    where: { id },
+    data: payload,
+  });
+  return schedule;
 };
 
 const deleteSchedule = async (id: string) => {
-  return { id };
+  const schedule = await prisma.shedule.delete({
+    where: { id },
+  });
+  return schedule;
 };
 
 export const ScheduleService = {
