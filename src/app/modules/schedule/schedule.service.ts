@@ -4,6 +4,10 @@ import { IQueryParams } from "../../helper/query.interface";
 import { QueryBuilder } from "../../helper/Querybuilder";
 import { prisma } from "../../lib/prisma";
 import {
+  scheduleIncludeConfig,
+  scheduleSearchableFields,
+} from "./schedule.contant";
+import {
   ICreateSchedulePayload,
   IUpdateSchedulePayload,
 } from "./schedule.interface";
@@ -71,10 +75,17 @@ const getAllSchedules = async (query: IQueryParams) => {
     Prisma.SheduleWhereInput,
     Prisma.SheduleInclude
   >(prisma.shedule, query, {
-    searchableFields: ["id"],
-    filterableFields: [],
+    searchableFields: scheduleSearchableFields,
+    filterableFields: scheduleSearchableFields,
   });
-  const result = await queryBuilder.search().filter().paginate().execute();
+  const result = await queryBuilder
+    .search()
+    .filter()
+    .paginate()
+    .dynamicInclude(scheduleIncludeConfig)
+    .sort()
+    .fields()
+    .execute();
   return result;
 };
 
@@ -86,11 +97,38 @@ const getScheduleById = async (id: string) => {
 };
 
 const updateSchedule = async (id: string, payload: IUpdateSchedulePayload) => {
-  const schedule = await prisma.shedule.update({
-    where: { id },
-    data: payload,
+  const { startDate, endDate, startTime, endTime } = payload;
+  const startDateTime = new Date(
+    addMinutes(
+      addHours(
+        `${format(new Date(startDate), "yyyy-MM-dd")}`,
+        Number(startTime.split(":")[0]),
+      ),
+      Number(startTime.split(":")[1]),
+    ),
+  );
+
+  const endDateTime = new Date(
+    addMinutes(
+      addHours(
+        `${format(new Date(endDate), "yyyy-MM-dd")}`,
+        Number(endTime.split(":")[0]),
+      ),
+      Number(endTime.split(":")[1]),
+    ),
+  );
+
+  const updatedSchedule = await prisma.shedule.update({
+    where: {
+      id: id,
+    },
+    data: {
+      startDateTime: startDateTime,
+      endDateTime: endDateTime,
+    },
   });
-  return schedule;
+
+  return updatedSchedule;
 };
 
 const deleteSchedule = async (id: string) => {
