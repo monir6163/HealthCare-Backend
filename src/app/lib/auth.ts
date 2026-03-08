@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { APIError, createAuthMiddleware } from "better-auth/api";
+import { APIError, createcheckAuth } from "better-auth/api";
 import { emailOTP } from "better-auth/plugins";
 import { StatusCodes } from "http-status-codes";
 import { envConfig } from "../../config/env";
@@ -81,7 +81,7 @@ export const auth = betterAuth({
   ],
 
   hooks: {
-    before: createAuthMiddleware(async (ctx) => {
+    before: createcheckAuth(async (ctx) => {
       if (ctx.path === "/sign-in/email") {
         const { email } = ctx.body;
         const user = await prisma.user.findUnique({

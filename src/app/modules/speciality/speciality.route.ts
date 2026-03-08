@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { multerUpload } from "../../../config/multer.config";
 import { Role } from "../../../generated/prisma/enums";
-import authMiddleware from "../../middleware/Auth";
+import checkAuth from "../../middleware/Auth";
 import validateRequest from "../../middleware/ValidateRequest";
 import { SpecialityController } from "./speciality.controller";
 import { specialityValidation } from "./speciality.validation";
@@ -10,7 +10,7 @@ const router = Router();
 
 router.post(
   "/",
-  authMiddleware(Role.ADMIN, Role.DOCTOR),
+  checkAuth(Role.ADMIN, Role.DOCTOR),
   multerUpload.single("file"),
   validateRequest(specialityValidation.createSpecialitySchema),
   SpecialityController.createSpeciality,

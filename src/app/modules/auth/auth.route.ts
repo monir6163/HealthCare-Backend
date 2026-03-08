@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Role } from "../../../generated/prisma/enums";
-import authMiddleware from "../../middleware/Auth";
+import checkAuth from "../../middleware/Auth";
 import validateRequest from "../../middleware/ValidateRequest";
 import { AuthController } from "./auth.controller";
 import { AuthValidation } from "./auth.validation";
@@ -8,7 +8,7 @@ import { AuthValidation } from "./auth.validation";
 const router = Router();
 router.get(
   "/me",
-  authMiddleware(Role.PATIENT, Role.DOCTOR, Role.ADMIN, Role.SUPER_ADMIN),
+  checkAuth(Role.PATIENT, Role.DOCTOR, Role.ADMIN, Role.SUPER_ADMIN),
   AuthController.getMe,
 );
 router.post(
@@ -25,14 +25,14 @@ router.post(
 
 router.post(
   "/change-password",
-  authMiddleware(Role.PATIENT, Role.DOCTOR, Role.ADMIN, Role.SUPER_ADMIN),
+  checkAuth(Role.PATIENT, Role.DOCTOR, Role.ADMIN, Role.SUPER_ADMIN),
   validateRequest(AuthValidation.changePasswordSchema),
   AuthController.changePassword,
 );
 
 router.post(
   "/logout",
-  authMiddleware(Role.PATIENT, Role.DOCTOR, Role.ADMIN, Role.SUPER_ADMIN),
+  checkAuth(Role.PATIENT, Role.DOCTOR, Role.ADMIN, Role.SUPER_ADMIN),
   AuthController.logOut,
 );
 

@@ -5,7 +5,7 @@ import { Role, UserStatus } from "../../generated/prisma/enums";
 import ApiError from "../errors/ApiError";
 import { auth } from "../lib/auth";
 
-const authMiddleware = (...roles: string[]) => {
+const checkAuth = (...roles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const headers = fromNodeHeaders(req.headers);
@@ -53,4 +53,4 @@ const authMiddleware = (...roles: string[]) => {
   };
 };
 
-export default authMiddleware;
+export default checkAuth;
